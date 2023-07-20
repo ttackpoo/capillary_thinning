@@ -2,18 +2,11 @@
 DoS CaBER 실험 이미지를 분석하기 위한 모듈입니다.
 
 """
-<<<<<<< HEAD
 import cv2, sys
 import numpy as np
 import cupy as cp
 import scipy.optimize as optimize
 from mcplexpt.core import ExperimentTIFF
-=======
-import cv2
-import numpy as np
-import scipy.optimize as optimize
-from codes.mcplexpt.core import ExperimentTIFF
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
 
 
 class DoSCaBERExperiment(ExperimentTIFF):
@@ -29,7 +22,6 @@ class DoSCaBERExperiment(ExperimentTIFF):
     >>> expt = DoSCaBERExperiment(path)
 
     """
-<<<<<<< HEAD
     
 
     def capbridge_start(self, image): ## 설명 Capillarty thinning 측정시작부를 판단하기 위한 코드
@@ -40,15 +32,6 @@ class DoSCaBERExperiment(ExperimentTIFF):
         yss, xss = np.where(image_c == 255)
       
         thick_l =[]
-=======
-    def capbridge_start(self, image): ## 설명 '''~~''' 넣어야 함.
-
-        image_check = self.get_nth_image(-1)
-        image_c = cv2.Canny(image_check,50,220)
-        yss, xss = np.where(image_c == 255)    
-        thick_l =[]
-
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
         row_l =[]
         for y in set(yss):
             edge_xss = xss[np.where(yss == y)]
@@ -57,18 +40,11 @@ class DoSCaBERExperiment(ExperimentTIFF):
                 thick_l.append(thick)
             elif y >= 9 and thick < int(sum(thick_l)/len(thick_l)-10) : ## 노즐 두께에 따라 310이 아닐수 있기때문에 변경필요.
                 row_l.append(row)
-<<<<<<< HEAD
                 break    
         nozzle_thick = int(sum(thick_l)/len(thick_l))
         
         row_roi = row_l[0]
         image=image.download()
-=======
-                break
-        nozzle_thick = int(sum(thick_l)/len(thick_l))
-        row_roi = row_l[0]
-        
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
         h,w = image.shape
         roi = image[int(row_roi):int(row_roi+0.2*nozzle_thick),0:w]    
         
@@ -126,11 +102,7 @@ class DoSCaBERExperiment(ExperimentTIFF):
             :include-source:
             :context: reset
 
-<<<<<<< HEAD
             >>> import matplotfluilib.pyplot as plt
-=======
-            >>> import matplotlib.pyplot as plt
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
             >>> from mcplexpt.caber.dos import DoSCaBERExperiment
             >>> from mcplexpt.testing import get_samples_path
             >>> path = get_samples_path("caber", "dos", "sample_250fps.tiff")
@@ -151,12 +123,8 @@ class DoSCaBERExperiment(ExperimentTIFF):
 
         """
         image_check = self.get_nth_image(-1)
-<<<<<<< HEAD
         image_check = image_check.download()
         image_c=cv2.Canny(image_check,50,220)     
-=======
-        image_c = cv2.Canny(image_check,50,220)
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
         yss, xss = np.where(image_c == 255)    
         thick_l =[]
         row_l =[]
@@ -170,11 +138,7 @@ class DoSCaBERExperiment(ExperimentTIFF):
                 break
         nozzle_thick = int(sum(thick_l)/len(thick_l))
         row_roi = row_l[0]
-<<<<<<< HEAD
         image=image.download()
-=======
-        
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
         h,w = image.shape
         roi_image = image[0:int(row_roi+1.5*nozzle_thick+10),0:w] ## Neck의 하단부는 roi에서 잘려나감. 조금 더 넓은범위 확인할 수 있으면서 노이즈끼지 않도록 수정필요.
 
@@ -190,11 +154,7 @@ class DoSCaBERExperiment(ExperimentTIFF):
         
         if len(only_w_y_row) == 0:
             return False
-<<<<<<< HEAD
         elif len(only_w_y_row) != 0 and max(only_w_y_row) != h and min(only_w_y_row) != 0:            
-=======
-        elif len(only_w_y_row) != 0 and max(only_w_y_row) != h and min(only_w_y_row) != 0:
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
             return True
 
     def width_average_fixedroi_modified(self,image):
@@ -255,11 +215,7 @@ class DoSCaBERExperiment(ExperimentTIFF):
 
         """  
         image_check = self.get_nth_image(-1)
-<<<<<<< HEAD
         image_c = cv2.cuda.Canny(image_check,50,220)
-=======
-        image_c = cv2.Canny(image_check,50,220)
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
         yss, xss = np.where(image_c == 255)    
         thick_l =[]
         row_l =[]
@@ -536,11 +492,7 @@ class DoSCaBERExperiment(ExperimentTIFF):
         except ZeroDivisionError: #일부 이미지 초기구간에서 ZeroError 발생해서 추가함.. 상세원인은 추가적인 고민 필요.
             pass
 
-<<<<<<< HEAD
     def Image_Radius_Measure_temp(self,tifname,savenumber,fps):
-=======
-    def Image_Radius_Measure(self,tifname,savenumber):
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
         """
         측정영상(tif file)을 Frame 별로 분석하여 측정시간/ Break시간/ Wdith 값을 엑셀로 추출합니다.
         fps에 따라 code 정보 변경해야 합니다. (기본 10000 fps로 설정)
@@ -587,7 +539,6 @@ class DoSCaBERExperiment(ExperimentTIFF):
         path = get_samples_path("caber", "dos", tifname)
         expt = DoSCaBERExperiment(path)
 
-<<<<<<< HEAD
         directory = os.getcwd()+'/relaxationtime/'
         try:
             if not os.path.exists(directory+savenumber):
@@ -743,9 +694,6 @@ class DoSCaBERExperiment(ExperimentTIFF):
         expt = DoSCaBERExperiment(path)
 
         directory = os.getcwd()+'/relaxationtime/'
-=======
-        directory = os.getcwd()+'\\'
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
         try:
             if not os.path.exists(directory+savenumber):
                 os.makedirs(directory+savenumber)
@@ -767,10 +715,6 @@ class DoSCaBERExperiment(ExperimentTIFF):
             result = expt.capbridge_start(image)
             ret_s.append(result)
         start_f = ret_s.index(True)
-<<<<<<< HEAD
-=======
-        
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
         ret = []
         for i in range(0,frame_number):
             image = expt.get_nth_image(i)
@@ -782,7 +726,6 @@ class DoSCaBERExperiment(ExperimentTIFF):
         ##이미지 저장
         '''if break_f>20 and frame_number-break_f> 10:
             for i in range(break_f-20,break_f+10):
-                image = expt.get_nth_image(i)
                 cv2.imwrite(directory+savenumber+'/'+savenumber+'_image{}.png'.format(i),image)
         else: 
             for i in range(break_f-10,break_f+5):
@@ -792,18 +735,6 @@ class DoSCaBERExperiment(ExperimentTIFF):
 
         ##이미지 저장
         if break_f>20 and frame_number-break_f> 10:
-            for i in range(break_f-20,break_f+10):
-                image = expt.get_nth_image(i)
-                cv2.imwrite(directory+savenumber+'\\'+savenumber+'_image{}.png'.format(i),image)
-        else: 
-            for i in range(break_f-10,break_f+5):
-                image = expt.get_nth_image(i)
-                cv2.imwrite(directory+savenumber+'\\'+savenumber+'_image{}.png'.format(i),image)
->>>>>>> fb631c5eb8460ebedb5bb280d305a7259e0c1ee0
-        
-        ret1 = []
-        for i in range(0,frame_number):
-            try:
                 if i>=start_f and i<break_f:
                     image = expt.get_nth_image(i)
                     width = expt.width_average_fixedroi_modified(image) 
