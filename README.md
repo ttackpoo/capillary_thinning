@@ -2,6 +2,32 @@
 
 
 
+
+
+## Over view
+
+* **Step1. Data Preparation**: Fluid thinning 영상 이미지를 측정하고, 로딩해서 필요한 이미지들만 추출하는 단계
+* **Step2. Data Prerprocessing**: Whitening, Cropping, Stacking 과정을 통해서 Merge Image를 만들고, Data Augmentation 활용하여 Data 증폭하는 단계
+* **Step3. Model Training**: PCA 와 KNN method 활용하여 Model을 유체 농도 예측 모델을 트레이닝하는 단계
+* **Step4. Model Validation**: MSE 방법을 활용해서 PCs,k,Weigtht,Frame 등의 Hyper parameter를 결정하는 단계
+* **Step5. Model Testing**: 최종적으로 Test Data를 활용하여 유체 농도를 예측하는 단계
+
+
+## Step1. Data Preparation
+
+첫 번째 단계는 우리 페이퍼(연동)의 Introduction에서와 같이 DoS-CaBER를 사용하요 확보된 영상 데이터를 불러오는 단계이다. 해당 단계는 dos.py(강조) 파일을 통해 실행된다. 영상은 DoSCaBERExperiment.get_nth_image를 통해 frame 순서대로 불러와진다. DoSCaBERExperiment.capbridge_start와 DoSCaBERExperiment.capbridge_broken method를 통해 fluid thinning이 발생되는 frame과 fluid pinch-off가 발생하는 frame을 찾아낸다. 우리는 본 논문에서 그 2개의 frame과 그 사이의 frame들을 사용한다.  [paper](https://epicgit.snu.ac.kr/ttackpool/paper_minhyuckim_eigen_thinning/-/blob/main/sn-article.pdf)
+
+## Step2. Data Preprocessing
+두 번째 단계는 앞서 확보한 이미지 데이터들을 모델 구축에 필요한 데이터 형태로 가공하는 단계이다. 본 논문에서는 크게 2개의 데이터 가공방법이 활용되었따. 첫 번째 가공방법은 Merge된 Fluid thinning 이미지를 얻는 방법이다. 이를 위해서는 이미지 데이터의 Whitening, Cropping, Stacking이 필요하다. 이는 dos.py(강조) 파일을 통해 실행된다. DoSCaBERExperiment.Image_storage method를 활용한다. 해당 method 에서는 OpenCV 라이브러리를 사용하여 이미지를 Whitening 한다. 또한 이미지의 형상적 특징을 기반으로 Cropping을 하여, 불필요한 이미지 데이터를 삭제하고 이미지의 Centering을 맞춘다. 각 Frame은 White pixel은 255/Number of total frames로 만들어지고 모든 frame들을 하나의 이미지로 합친다. 이과정을 통해 Fluid thinning 영상은 1개의 이미지로 통합된다. 마지막으로 필요에 따라 Pinch-off되는 시점의 이미지들에는 Weight가 주어진다. 이러한 과정의 필요성은 본 논문(연동)의 Results and discussion 과 Fig.8과 Fig.9에서 설명되어진다. 두 번째 가공방법은 Image data들을 Augmentation 하는 방법이다. 이는 [PCA]((https://epicgit.snu.ac.kr/ttackpool/code-availability.git)) 디렉토리의 `PCA.py` 파일을 통해 실행되어진다. `PCA.pcaclass.augmentation` 를 통해 구현된다. 이 방법은 본 논문에서 PCA를 통해 구현한 독자적인 Fluid thinning의 Augmentation 방법이다. 각 PC에 해당하는 PCA score값에 random ratio를 곱하여 변환을 주고 이를 reconstruction 해서 PCs가 조금 씩 변환된 Image들을 만들어 낸다. Image augmentation은 모델의 정확도 향상을 만든다.
+## Step3. Model Training
+세 번째 단계는 혼합 유체의 농도를 예측하는 Machine learning model을 트레이닝하는 단계이다. 해당 단계는 [PCA]((https://epicgit.snu.ac.kr/ttackpool/code-availability.git)) 디렉토리의 `PCA.py`파일을 통해 실행된다. `PCA.pcaclass.eigen(수정필요)`을 통해 농도 예측 모델은 만들어진다. scikit-learn 라이브러리가 주요하게 사용되었다. `sklearn.decomposition.PCA`을 통해 차원축소 및 노이즈 제거 방법 중 한가지인 PCA를 실행하였다. PCA가 적용된 데이터들과 `sklearn.decomposition와 sklearn.neighbors.KNeighborsClassifier`을 사용하여  `KNN 알고리즘` 기반의 유체농도 예측 모델을 만들었다. 
+
+## Step4. Model Validation
+네 번째 단계는 모델의 정확도 향상을 위한 Hyper parameter 결정을 위한 Validation 단계이다. `PCA.pcaclass.eing_validation(수정필요)`을 사용하여 진행된다. 이 때, KNN의 class 결정 parameter인 k 값은 1~20까지 구간에서, 동시에 PCA의 주성분의 갯수는 5~55까지 5의 간격으로 반복되어 계산된다. 농도를 예측하는 계산 방식은 논문의 ~~에 부분에서 설명된다. `knn_proba`를 활용하여 validation data의 각 class에 해당하는 probability가 계산된다. probability를 기반으로 validation data의 농도가 예측된다. 예측값과 label값의 차이를 통해 `MSE(Mean Squre Error)`를 구한다. MSE가 최소가 되는 k값과 PCs를 결정한다. 본 논문에서는 유체의 농도를 예측하기 위해 이와 같은 방식으로 MSE를 구하였지만, 이는 사용자의 목적에 따라 예측값을 계산하는 과정이 달라질 수 있으며 이에 따라 Model 정확도를 향상시키는 Hyper parameter는 달라진다.
+
+## Step5. Model Testing
+다섯 번째 단계는 모델을 테스트하는 단계로, 유체의 농도를 예측하는 단계이다. ~~~을 활용한다. 이 때는 결정된 k, PCs, Weight가 parameter로 입력되어야 한다. 결과적으로 ~~를 통해 예측되고 예측결과는 Excel data와 Plot image로 나타난다.
+
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
