@@ -2,7 +2,7 @@
 
 
 
-## Over view
+## Overview
 <img src="./mcplexpt/Figure/Readme_figure1.png" width="1100" />
 
 * **Step1. Data Collection**: In this step, we measure and load the Fluid Thinning video images, extracting only the necessary images.
