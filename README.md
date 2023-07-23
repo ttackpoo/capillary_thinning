@@ -5,7 +5,7 @@
 
 
 ## Over view
-<img src="/code-availability/mcplexpt/Figure/Readme_figure1.png" width="1100" />
+<img src="./mcplexpt/Figure/Readme_figure1.png" width="1100" />
 
 * **Step1. Data Collection**: Fluid thinning 영상 이미지를 측정하고, 로딩해서 필요한 이미지들만 추출하는 단계
 * **Step2. Data Processing**: Whitening, Cropping, Stacking 과정을 통해서 Merge Image를 만들고, Data Augmentation 활용하여 Data 증폭하는 단계
