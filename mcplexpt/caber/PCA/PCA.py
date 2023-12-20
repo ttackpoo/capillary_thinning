@@ -18,8 +18,8 @@ import numpy as np
 import os
 import scipy.optimize as optimize
 import matplotlib.pyplot as plt
-from mcplexpt.caber.dos import DoSCaBERExperiment
-from mcplexpt.testing import get_samples_path
+#from mcplexpt.caber.dos import DoSCaBERExperiment
+#from mcplexpt.testing import get_samples_path
 from sklearn.preprocessing import StandardScaler  ##StandardScaler :  평균0,분산1로 표준화 해준다.
 from sklearn.decomposition import PCA
 from sklearn.neighbors import KNeighborsClassifier
@@ -788,10 +788,10 @@ class pcaclass:
         StandardScaler()
         X_people = scaler.transform(data)'''        
         pca = PCA(n_components=pca_c, whiten=True, random_state=0).fit(X_people)        
-        fig, axes = plt.subplots(3,5, figsize=(15,12), subplot_kw={'xticks': (), 'yticks': ()},dpi=300)      
+        fig, axes = plt.subplots(3,3, figsize=(15,12), subplot_kw={'xticks': (), 'yticks': ()},dpi=300)      
         for i, (component, ax) in enumerate(zip(pca.components_, axes.ravel())):            
             ax.imshow(component.reshape(image_shape), cmap='viridis')            
-            ax.set_title("PC {}".format(i+1))
+            #ax.set_title("PC {}".format(i+1))
             
         datavar=np.var(X_people,0)
         varmax=np.max(datavar) 
@@ -827,15 +827,217 @@ class pcaclass:
             scoreaverage.append(averagelist)
             scorevariance.append(variancelist)
 
-
-
-        return components, scoreaverage, image_shape, variance, mean, X_people, scorevariance, y_people, X_people_pca
+        fig.savefig('{}/{}'.format(save_dir,"Principal Component"+'_{}_weight'.format(a[-9:])),bbox_inches='tight')
+        fig2,axes2 = plt.subplots(subplot_kw={'xticks': (), 'yticks': ()},dpi=300)
+        for i, (component) in enumerate(pca.components_[[0,1,2,3,4,5,19,34],:]):
+            axes2.imshow(component.reshape(image_shape), cmap='viridis')
+            fig2.savefig('{}/{}'.format(save_dir,"Principal Component"+'_{}_pc{}'.format(a[-9:],i)),bbox_inches='tight')
         
+        return components, scoreaverage, image_shape, variance, mean, X_people, scorevariance, y_people, X_people_pca
+
+
+
+    def aug_component(self,a,b,c,d,e,f,g,pca_c):
+    
+            filename=a[7:]+b[7:]+c[7:]+d[7:]+e[7:]+f[7:]+g[7:]
+            base_dir = '/home/minhyukim/PCA/'
+            save_dir = base_dir+'PCA_result/'+filename
+    
+            try:
+                if not os.path.exists(save_dir):
+                    os.makedirs(save_dir)
+            except OSError:
+                print ('Error: Creating directory. ' +  save_dir)
     
     
+            a_dir = os.path.join(base_dir,'{}'.format(a))
+            b_dir = os.path.join(base_dir,'{}'.format(b))
+            c_dir = os.path.join(base_dir,'{}'.format(c))
+            d_dir = os.path.join(base_dir,'{}'.format(d))
+            e_dir = os.path.join(base_dir,'{}'.format(e))
+            f_dir = os.path.join(base_dir,'{}'.format(f))
+            g_dir = os.path.join(base_dir,'{}'.format(g))
+            
+            a_list = os.listdir(a_dir)
+            b_list = os.listdir(b_dir)
+            c_list = os.listdir(c_dir)
+            d_list = os.listdir(d_dir)
+            e_list = os.listdir(e_dir)
+            f_list = os.listdir(f_dir)
+            g_list = os.listdir(g_dir)
+            
+            a_images = np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0),axis=0)
+            b_images = np.expand_dims(cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0),axis=0)
+            c_images = np.expand_dims(cv2.imread(os.path.join(c_dir,'{}'.format(c_list[0])),0),axis=0)
+            d_images = np.expand_dims(cv2.imread(os.path.join(d_dir,'{}'.format(d_list[0])),0),axis=0)
+            e_images = np.expand_dims(cv2.imread(os.path.join(e_dir,'{}'.format(e_list[0])),0),axis=0)
+            f_images = np.expand_dims(cv2.imread(os.path.join(f_dir,'{}'.format(f_list[0])),0),axis=0)
+            g_images = np.expand_dims(cv2.imread(os.path.join(g_dir,'{}'.format(g_list[0])),0),axis=0)
+            for i in range(1,len(a_list)):
+                a_images = np.concatenate((a_images,np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0),axis=0)))
+            for i in range(1,len(b_list)):
+                b_images = np.concatenate((b_images,np.expand_dims(cv2.imread(os.path.join(b_dir,'{}'.format(b_list[i])),0),axis=0)))
+            for i in range(1,len(c_list)):
+                c_images = np.concatenate((c_images,np.expand_dims(cv2.imread(os.path.join(c_dir,'{}'.format(c_list[i])),0),axis=0)))
+            for i in range(1,len(d_list)):
+                d_images = np.concatenate((d_images,np.expand_dims(cv2.imread(os.path.join(d_dir,'{}'.format(d_list[i])),0),axis=0)))
+            for i in range(1,len(e_list)):
+                e_images = np.concatenate((e_images,np.expand_dims(cv2.imread(os.path.join(e_dir,'{}'.format(e_list[i])),0),axis=0)))
+            for i in range(1,len(f_list)):
+                f_images = np.concatenate((f_images,np.expand_dims(cv2.imread(os.path.join(f_dir,'{}'.format(f_list[i])),0),axis=0)))
+            for i in range(1,len(g_list)):
+                g_images = np.concatenate((g_images,np.expand_dims(cv2.imread(os.path.join(g_dir,'{}'.format(g_list[i])),0),axis=0)))
+            images = np.concatenate((a_images,b_images,c_images,d_images,e_images,f_images,g_images),axis=0)
+            
+            a_data = np.expand_dims((cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0).flatten()),axis=0)
+            b_data = np.expand_dims((cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0).flatten()),axis=0)
+            c_data = np.expand_dims((cv2.imread(os.path.join(c_dir,'{}'.format(c_list[0])),0).flatten()),axis=0)
+            d_data = np.expand_dims((cv2.imread(os.path.join(d_dir,'{}'.format(d_list[0])),0).flatten()),axis=0)
+            e_data = np.expand_dims((cv2.imread(os.path.join(e_dir,'{}'.format(e_list[0])),0).flatten()),axis=0)
+            f_data = np.expand_dims((cv2.imread(os.path.join(f_dir,'{}'.format(f_list[0])),0).flatten()),axis=0)
+            g_data = np.expand_dims((cv2.imread(os.path.join(g_dir,'{}'.format(g_list[0])),0).flatten()),axis=0)
+            for i in range(1,len(a_list)):
+                a_data = np.concatenate((a_data,np.expand_dims((cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0).flatten()),axis=0)))
+            for i in range(1,len(b_list)):
+                b_data = np.concatenate((b_data,np.expand_dims((cv2.imread(os.path.join(b_dir,'{}'.format(b_list[i])),0).flatten()),axis=0)))
+            for i in range(1,len(c_list)):
+                c_data = np.concatenate((c_data,np.expand_dims((cv2.imread(os.path.join(c_dir,'{}'.format(c_list[i])),0).flatten()),axis=0))) 
+            for i in range(1,len(d_list)):
+                d_data = np.concatenate((d_data,np.expand_dims((cv2.imread(os.path.join(d_dir,'{}'.format(d_list[i])),0).flatten()),axis=0)))
+            for i in range(1,len(e_list)):
+                e_data = np.concatenate((e_data,np.expand_dims((cv2.imread(os.path.join(e_dir,'{}'.format(e_list[i])),0).flatten()),axis=0)))
+            for i in range(1,len(f_list)):
+                f_data = np.concatenate((f_data,np.expand_dims((cv2.imread(os.path.join(f_dir,'{}'.format(f_list[i])),0).flatten()),axis=0)))
+            for i in range(1,len(g_list)):
+                g_data = np.concatenate((g_data,np.expand_dims((cv2.imread(os.path.join(g_dir,'{}'.format(g_list[i])),0).flatten()),axis=0)))
+            data = np.concatenate((a_data,b_data,c_data,d_data,e_data,f_data,g_data),axis=0)    
+        
+            ## CMC = 0, PEO = 1 로 넘버링
+            target_0 = []
+            for i in range(0,len(a_list)):
+                target_0.append(0)
+            target_1 = []
+            for i in range(0,len(b_list)):
+                target_1.append(1)
+            target_2 = []
+            for i in range(0,len(c_list)):
+                target_2.append(2)
+            target_3 = []
+            for i in range(0,len(d_list)):
+                target_3.append(3)
+            target_4 = []
+            for i in range(0,len(e_list)):
+                target_4.append(4)
+            target_5 = []
+            for i in range(0,len(f_list)):
+                target_5.append(5)
+            target_6 = []
+            for i in range(0,len(g_list)):
+                target_6.append(6)
+            target = target_0 + target_1 +target_2 + target_3 + target_4 + target_5 + target_6##순서 바뀌면 안됨. 앞의 이미지와 매칭되는 넘버링 이기때문에
+            target = np.array(target)
+        
+            target_names = ['{}'.format(a),'{}'.format(b),'{}'.format(c), '{}'.format(d),'{}'.format(e), '{}'.format(f),'{}'.format(g)]
+        
+            image_shape = images[0].shape ## image는 실제 이미지샘플 1개 의미함 (여기서 people.은 이미지 보관 장소?)
+            '''fig, axes = plt.subplots(2, 5, figsize=(15, 8), subplot_kw={'xticks':(), 'yticks':()}) ##이미지 확인
+            for target, image, ax in zip(target,images, axes.ravel()):
+                ax.imshow(image)
+                ax.set_title(target_names[target])
+            plt.show()'''     
+        
+            ##
+            print("images.shape: {}".format(images.shape))
+            print("클래스의 개수: {}".format(len(target_names)))
+            
+            ##target 이 자꾸1로 변경되서 다시 추가함
+            target = target_0 + target_1 +target_2 + target_3 + target_4 + target_5 + target_6##순서 바뀌면 안됨. 앞의 이미지와 매칭되는 넘버링 이기때문에
+            target = np.array(target)
+            
+            
+            # mask = np.zeros(target.shape, dtype=np.bool)
+            # for i in np.unique(target):
+            #     mask[np.where(target== i)[0][:]] = 1
+            
+            # X_people = data[mask]
+            # y_people = target[mask]
+            
+            # X_people = X_people / 255.
+            X_people = data
+            y_people = target
+            ##
+            X_train, X_test, y_train, y_test = train_test_split(X_people, y_people, stratify=y_people, random_state=0)
+            
+            '''
+            ##향후에 k값 변경 필요시 사용
+            k_list = range(1,101)
+            accuracies = []
+            for k in k_list:
+              classifier = KNeighborsClassifier(n_neighbors = k)
+              classifier.fit(training_data, training_labels)
+              accuracies.append(classifier.score(validation_data, validation_labels))
+            plt.plot(k_list, accuracies)
+            plt.xlabel("k")
+            plt.ylabel("Validation Accuracy")
+            plt.title("Breast Cancer Classifier Accuracy")
+            plt.show()
+            ''' 
+            knn = KNeighborsClassifier(n_neighbors=3)
+            knn.fit(X_train, y_train)
+            '''scaler= StandardScaler()
+            X_people = scaler.fit(data)
+            StandardScaler()
+            X_people = scaler.transform(data)'''        
+            pca = PCA(n_components=pca_c, whiten=False, random_state=0).fit(X_people)        
+            fig, axes = plt.subplots(3,3, figsize=(15,12), subplot_kw={'xticks': (), 'yticks': ()},dpi=300)      
+            for i, (component, ax) in enumerate(zip(pca.components_, axes.ravel())):            
+                ax.imshow(component.reshape(image_shape), cmap='viridis')            
+                #ax.set_title("PC {}".format(i+1))
+                
+            datavar=np.var(X_people,0)
+            varmax=np.max(datavar) 
+            X_train_pca = pca.transform(X_train)
+            X_test_pca = pca.transform(X_test)
+            X_people_pca = pca.transform(X_people)
+            components=pca.components_
+            variance=pca.explained_variance_
+            mean=pca.mean_        
     
-         
-    def eigen7(self,a,b,c,d,e,f,g,pc1,pc2,pc3,stackup_pc,pcpxindex,pca_c,pixel):
+            list_list=[a_list,b_list,c_list,d_list,e_list,f_list,g_list]
+            scoreaverage=[]
+            scorevariance=[]        
+           
+            for j in range(0,pca_c):
+                averagelist=[]
+                variancelist=[]
+                flag=0
+                for i in range(0,7):
+                    if i == 0:
+                        average=sum(X_people_pca[0:len(list_list[i]),j])/len(list_list[i])
+                        averagelist.append(average)
+                        variance=np.var(X_people_pca[0:len(list_list[i]),j],axis=0)
+                        variancelist.append(variance)
+                        flag=len(list_list[i])                    
+                    else:                    
+                        average=sum(X_people_pca[flag:flag+len(list_list[i]),j])/len(list_list[i])
+                        averagelist.append(average)
+                        variance=np.var(X_people_pca[flag:flag+len(list_list[i]),j],axis=0)
+                        variancelist.append(variance)
+                        flag=flag+len(list_list[i])
+                        
+                scoreaverage.append(averagelist)
+                scorevariance.append(variancelist)
+    
+            fig.savefig('{}/{}'.format(save_dir,"Principal Component"+'_{}_weight'.format(a[-9:])),bbox_inches='tight')
+            fig2,axes2 = plt.subplots(subplot_kw={'xticks': (), 'yticks': ()},dpi=300)
+            for i, (component) in enumerate(pca.components_[[0,1,2,3,4,5,19,34],:]):
+                axes2.imshow(component.reshape(image_shape), cmap='viridis')
+                fig2.savefig('{}/{}'.format(save_dir,"Principal Component"+'_{}_pc{}'.format(a[-9:],i)),bbox_inches='tight')
+            
+            return components, scoreaverage, image_shape, variance, mean, X_people, scorevariance, y_people, X_people_pca
+            
+    
+    def eigen7_aug(self,a,b,c,d,e,f,g,pc1,pc2,pc3,stackup_pc,pcpxindex,pca_c,pixel):
         '''
         
     
@@ -1011,6 +1213,14 @@ class pcaclass:
         f_list = os.listdir(f_dir)
         g_list = os.listdir(g_dir)
 
+        a_list.sort()
+        b_list.sort()
+        c_list.sort()
+        d_list.sort()
+        e_list.sort()
+        f_list.sort()
+        g_list.sort()
+
 
         a_images = np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0),axis=0)
         b_images = np.expand_dims(cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0),axis=0)
@@ -1019,6 +1229,7 @@ class pcaclass:
         e_images = np.expand_dims(cv2.imread(os.path.join(e_dir,'{}'.format(e_list[0])),0),axis=0)
         f_images = np.expand_dims(cv2.imread(os.path.join(f_dir,'{}'.format(f_list[0])),0),axis=0)
         g_images = np.expand_dims(cv2.imread(os.path.join(g_dir,'{}'.format(g_list[0])),0),axis=0)
+        
         for i in range(1,len(a_list)):
             a_images = np.concatenate((a_images,np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0),axis=0)))
         for i in range(1,len(b_list)):
@@ -1096,9 +1307,18 @@ class pcaclass:
 
         ##
         X_people=data1
-                
+
         y_people=target
 
+        f_X_people=[]
+        f_y_people=[]
+        for i in range(7):
+            f_X_people.append(X_people[40*i:30+40*i])
+            f_y_people.append(y_people[40*i:30+40*i])
+        f_X_people=np.reshape(f_X_people,(210,144000))
+        f_y_people=np.reshape(f_y_people,(210,))       
+  
+        print(np.shape(f_y_people))
         ##target 이 자꾸1로 변경되서 다시 추가함
        
         
@@ -1115,8 +1335,10 @@ class pcaclass:
             for j in range(30):
                 
                 print(np.shape(X_people),np.shape(y_people))         
-                X_train, X_test, y_train, y_test = train_test_split(X_people, y_people, stratify=y_people, test_size=0.04,  shuffle=True)
+                X_train, X_test, y_train, y_test = train_test_split(X_people, y_people, stratify=y_people, test_size=0.04, shuffle=True)
+                f_X_train, f_X_test, f_y_train, f_y_test = train_test_split(f_X_people, f_y_people, stratify=f_y_people, test_size=0.05, shuffle=True)
                 pca = PCA(n_components=p-1, whiten=True, random_state=0).fit(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+                #pca = PCA(n_components=p-1, whiten=True, random_state=0).fit(X_train)
                       
                 '''
                 ##향후에 k값 변경 필요시 사용
@@ -1140,11 +1362,10 @@ class pcaclass:
                 datavar=np.var(X_people,0)
                 varmax=np.max(datavar) 
                 X_train_pca = pca.transform(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+                     
+                X_test_pca = pca.transform(f_X_test)
         
-                
-                X_test_pca = pca.transform(X_test)
-        
-                X_people_pca = pca.transform(X_people)
+                X_people_pca = pca.transform(f_X_people)
         
                 print(np.shape(X_train_pca),np.shape(X_test_pca),np.shape(X_people_pca))
                 '''  
@@ -1228,10 +1449,9 @@ class pcaclass:
                 
                 proba_list=proba_list[0]
                 for k in range(len(proba_list)):
-                    Carbo_y[y_test[k]].append(proba_list[k][0])
-                   
-                    CMC_y[y_test[k]].append(proba_list[k][1])
-                    PEO_y[y_test[k]].append(proba_list[k][2])
+                    Carbo_y[f_y_test[k]].append(proba_list[k][0])                   
+                    CMC_y[f_y_test[k]].append(proba_list[k][1])
+                    PEO_y[f_y_test[k]].append(proba_list[k][2])
 
                 
 
@@ -1570,6 +1790,224 @@ class pcaclass:
            ax.imshow(rsp_stack,cmap='viridis')
            ax.set_title("Pixels for PC{}_Rank {}%".format(pcpxindex+1,(i+1)*5))
         fig9.savefig('{}/{}'.format(save_dir,"Important Pixels(Rank)_{}".format(pcpxindex+1)))'''
+        return MSE_pc_list,MSE_pc_list123, MSE_pc_list4567
+
+
+
+    
+    
+    
+         
+    def eigen7(self,a,b,c,d,e,f,g,pca_c):
+
+        filename=a[7:]+b[7:]+c[7:]+d[7:]+e[7:]+f[7:]+g[7:]
+        base_dir = '/home/minhyukim/PCA/'
+        save_dir = base_dir+'PCA_result/'+filename
+
+        try:
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+        except OSError:
+            print ('Error: Creating directory. ' +  save_dir)
+
+
+        a_dir = os.path.join(base_dir,'{}'.format(a))
+        b_dir = os.path.join(base_dir,'{}'.format(b))
+        c_dir = os.path.join(base_dir,'{}'.format(c))
+        d_dir = os.path.join(base_dir,'{}'.format(d))
+        e_dir = os.path.join(base_dir,'{}'.format(e))
+        f_dir = os.path.join(base_dir,'{}'.format(f))
+        g_dir = os.path.join(base_dir,'{}'.format(g))
+
+        a_list = os.listdir(a_dir)
+        b_list = os.listdir(b_dir)
+        c_list = os.listdir(c_dir)
+        d_list = os.listdir(d_dir)
+        e_list = os.listdir(e_dir)
+        f_list = os.listdir(f_dir)
+        g_list = os.listdir(g_dir)
+
+
+        a_images = np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0),axis=0)
+        b_images = np.expand_dims(cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0),axis=0)
+        c_images = np.expand_dims(cv2.imread(os.path.join(c_dir,'{}'.format(c_list[0])),0),axis=0)
+        d_images = np.expand_dims(cv2.imread(os.path.join(d_dir,'{}'.format(d_list[0])),0),axis=0)
+        e_images = np.expand_dims(cv2.imread(os.path.join(e_dir,'{}'.format(e_list[0])),0),axis=0)
+        f_images = np.expand_dims(cv2.imread(os.path.join(f_dir,'{}'.format(f_list[0])),0),axis=0)
+        g_images = np.expand_dims(cv2.imread(os.path.join(g_dir,'{}'.format(g_list[0])),0),axis=0)
+        for i in range(1,len(a_list)):
+            a_images = np.concatenate((a_images,np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0),axis=0)))
+        for i in range(1,len(b_list)):
+            b_images = np.concatenate((b_images,np.expand_dims(cv2.imread(os.path.join(b_dir,'{}'.format(b_list[i])),0),axis=0)))
+        for i in range(1,len(c_list)):
+            c_images = np.concatenate((c_images,np.expand_dims(cv2.imread(os.path.join(c_dir,'{}'.format(c_list[i])),0),axis=0)))
+        for i in range(1,len(d_list)):
+            d_images = np.concatenate((d_images,np.expand_dims(cv2.imread(os.path.join(d_dir,'{}'.format(d_list[i])),0),axis=0)))
+        for i in range(1,len(e_list)):
+            e_images = np.concatenate((e_images,np.expand_dims(cv2.imread(os.path.join(e_dir,'{}'.format(e_list[i])),0),axis=0)))
+        for i in range(1,len(f_list)):
+            f_images = np.concatenate((f_images,np.expand_dims(cv2.imread(os.path.join(f_dir,'{}'.format(f_list[i])),0),axis=0)))
+        for i in range(1,len(g_list)):
+            g_images = np.concatenate((g_images,np.expand_dims(cv2.imread(os.path.join(g_dir,'{}'.format(g_list[i])),0),axis=0)))
+        images = np.concatenate((a_images,b_images,c_images,d_images,e_images,f_images,g_images),axis=0)
+
+        a_data = np.expand_dims((cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0).flatten()),axis=0)
+        b_data = np.expand_dims((cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0).flatten()),axis=0)
+        c_data = np.expand_dims((cv2.imread(os.path.join(c_dir,'{}'.format(c_list[0])),0).flatten()),axis=0)
+        d_data = np.expand_dims((cv2.imread(os.path.join(d_dir,'{}'.format(d_list[0])),0).flatten()),axis=0)
+        e_data = np.expand_dims((cv2.imread(os.path.join(e_dir,'{}'.format(e_list[0])),0).flatten()),axis=0)
+        f_data = np.expand_dims((cv2.imread(os.path.join(f_dir,'{}'.format(f_list[0])),0).flatten()),axis=0)
+        g_data = np.expand_dims((cv2.imread(os.path.join(g_dir,'{}'.format(g_list[0])),0).flatten()),axis=0)
+        for i in range(1,len(a_list)):
+            a_data = np.concatenate((a_data,np.expand_dims((cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(b_list)):
+            b_data = np.concatenate((b_data,np.expand_dims((cv2.imread(os.path.join(b_dir,'{}'.format(b_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(c_list)):
+            c_data = np.concatenate((c_data,np.expand_dims((cv2.imread(os.path.join(c_dir,'{}'.format(c_list[i])),0).flatten()),axis=0))) 
+        for i in range(1,len(d_list)):
+            d_data = np.concatenate((d_data,np.expand_dims((cv2.imread(os.path.join(d_dir,'{}'.format(d_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(e_list)):
+            e_data = np.concatenate((e_data,np.expand_dims((cv2.imread(os.path.join(e_dir,'{}'.format(e_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(f_list)):
+            f_data = np.concatenate((f_data,np.expand_dims((cv2.imread(os.path.join(f_dir,'{}'.format(f_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(g_list)):
+            g_data = np.concatenate((g_data,np.expand_dims((cv2.imread(os.path.join(g_dir,'{}'.format(g_list[i])),0).flatten()),axis=0)))
+        data = np.concatenate((a_data,b_data,c_data,d_data,e_data,f_data,g_data),axis=0)
+        data1 = np.array(data)
+        
+
+        ## CMC = 0, PEO = 1 로 넘버링
+        target_0 = []
+        for i in range(0,len(a_list)):
+            target_0.append(0)
+        target_1 = []
+        for i in range(0,len(b_list)):
+            target_1.append(1)
+        target_2 = []
+        for i in range(0,len(c_list)):
+            target_2.append(2)
+        target_3 = []
+        for i in range(0,len(d_list)):
+            target_3.append(3)
+        target_4 = []
+        for i in range(0,len(e_list)):
+            target_4.append(4)
+        target_5 = []
+        for i in range(0,len(f_list)):
+            target_5.append(5)
+        target_6 = []
+        for i in range(0,len(g_list)):
+            target_6.append(6)
+        target = target_0 + target_1 +target_2 + target_3 + target_4 + target_5 + target_6##순서 바뀌면 안됨. 앞의 이미지와 매칭되는 넘버링 이기때문에
+        target = np.array(target)
+
+        target_names = ['{}'.format(a),'{}'.format(b),'{}'.format(c), '{}'.format(d),'{}'.format(e), '{}'.format(f),'{}'.format(g)]
+
+        image_shape = images[0].shape ## image는 실제 이미지샘플 1개 의미함 (여기서 people.은 이미지 보관 장소?)
+
+        ##
+        X_people=data1                
+        y_people=target
+
+
+        ##target 이 자꾸1로 변경되서 다시 추가함
+       
+        
+        MSE_pc_list=[]           
+        MSE_pc_list123=[]           
+        MSE_pc_list4567=[]
+        MSE_shuffle_list=[]
+        
+        for p in range(5,pca_c+1,10) :           
+            
+            MSE_shuffle_list=[]
+            MSE_shuffle_list123=[]
+            MSE_shuffle_list4567=[]
+            for j in range(30):
+                
+                print(np.shape(X_people),np.shape(y_people))         
+                X_train, X_test, y_train, y_test = train_test_split(X_people, y_people, stratify=y_people, test_size=0.04, shuffle=True)
+                pca = PCA(n_components=p-1, whiten=True, random_state=0).fit(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+                #pca = PCA(n_components=p-1, whiten=True, random_state=0).fit(X_train)
+                #knn = KNeighborsClassifier(n_neighbors=3)
+                #knn.fit(X_train, y_train)
+
+                
+                
+                datavar=np.var(X_people,0)
+                varmax=np.max(datavar) 
+                X_train_pca = pca.transform(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+                     
+                X_test_pca = pca.transform(X_test)
+        
+                X_people_pca = pca.transform(X_people)
+        
+                print(np.shape(X_train_pca),np.shape(X_test_pca),np.shape(X_people_pca))
+
+
+
+                Fluid=['R1','P1','R2','P2','R3','P3','R4','P4','R5','P5','R6','P6','R7','P7']
+                xticks=[0,0.4,1,1.4,2,2.4,3,3.4,4,4.4,5,5.4,6,6.4]
+                Carboref=[1,0,0,0.5,0.5 ,0,    0.33]
+                CMCref=  [0,1,0,0.5,0 ,  0.5,  0.33]
+                PEOref=  [0,0,1,0  ,0.5 ,0.5,  0.33]
+                matric=np.vstack([Carboref,CMCref,PEOref])
+                
+
+
+
+                classifier = KNeighborsClassifier(n_neighbors=6)
+                classifier.fit(X_train_pca, y_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+                #classifier.fit(X_train_pca, y_train)
+                proba_list=[]
+                
+            
+                proba = classifier.predict_proba(X_test_pca) 
+                
+                
+                proba_list.append(proba)                
+
+
+                Carbo_y=[[],[],[],[],[],[],[]]
+                CMC_y=[[],[],[],[],[],[],[]]
+                PEO_y=[[],[],[],[],[],[],[]]
+            
+                
+                
+                proba_list=proba_list[0]
+                for k in range(len(proba_list)):
+                    Carbo_y[y_test[k]].append(proba_list[k][0])                   
+                    CMC_y[y_test[k]].append(proba_list[k][1])
+                    PEO_y[y_test[k]].append(proba_list[k][2])
+
+                
+
+                Carbo_y=[np.average(i) for i in Carbo_y]
+          
+                CMC_y=[np.average(i) for i in CMC_y]
+                PEO_y=[np.average(i) for i in PEO_y]
+
+                matric2=np.vstack([Carbo_y,CMC_y,PEO_y])
+                MSE_list=[]
+                for i in range(7):
+                    #print('matric1',matric[:,i],'matric2',matric2[:,i])
+                    MSE=mean_squared_error(matric[:,i],matric2[:,i])
+                    MSE_list.append(MSE)
+                MSE_average=np.average(MSE_list)
+                #print('MSE_list',MSE_list)
+                MSE_average123=np.average(MSE_list[0:3])
+                MSE_average4567=np.average(MSE_list[3:-1])
+                MSE_shuffle_list.append(MSE_average)
+                MSE_shuffle_list123.append(MSE_average123)
+                MSE_shuffle_list4567.append(MSE_average4567)
+                print('min_random_state:',np.argmin(MSE_shuffle_list),'pc:',p)
+                print('max_random_state:',np.argmax(MSE_shuffle_list),'pc:',p)
+                
+            MSE_pc_list.append(MSE_shuffle_list)
+            MSE_pc_list123.append(MSE_shuffle_list123)
+            MSE_pc_list4567.append(MSE_shuffle_list4567)
+            
+
         return MSE_pc_list,MSE_pc_list123, MSE_pc_list4567
     
 
@@ -2165,19 +2603,23 @@ class pcaclass:
         
         
         
-        X_train, X_test, y_train, y_test = train_test_split(X_people, y_people, stratify=y_people, test_size=0.2,  shuffle=True)     
+        X_train, X_test, y_train, y_test = train_test_split(X_people, y_people, stratify=y_people, test_size=0.1,  shuffle=True)     
         
-   
 
-      
-        fig1,ax1=plt.subplots(2,5,figsize=(38,15),dpi=300)
-                  
-        k_list = range(1,20)
-        y_ticks=[0,0.2,0.4,0.6,0.8,1.0]
-        x_ticks=[0,5,10,15,20]  
+        fig,ax1 = plt.subplots(2,5,figsize=(38, 15), dpi=300,sharex=True,sharey=True)        
+    
+        
+        k_list = range(1, 20)
+        y_ticks = [0,0.2,0.4, 0.6, 0.8]
+        x_ticks = [5,10,15]
+        ax_labels=['(a)','(b)','(c)','(d)','(e)','(f)','(g)','(h)','(i)','(j)']
+        # 첫 번째 열의 서브플롯에만 y-axis label을 추가합니다.
+        fig.text(0.5, 0.04, 'k', ha='center', fontsize=30)
+        fig.text(0.08, 0.5, 'Validation Accuracy', va='center', rotation='vertical', fontsize=30)
 
-
-        for i,ax in zip(range(0,pca_c+1,5),ax1.ravel()):
+        
+        
+        for j, (i,ax) in enumerate(zip(range(0,pca_c+1,5),ax1.ravel())):
             pca = PCA(n_components=i+1, whiten=True, random_state=0).fit(X_train)
             X_train_pca=pca.transform(X_train)
             X_test_pca=pca.transform(X_test)            
@@ -2186,22 +2628,312 @@ class pcaclass:
                 classifier = KNeighborsClassifier(n_neighbors = k)
                 classifier.fit(X_train_pca, y_train)
                 accuracies.append(classifier.score(X_test_pca, y_test))
-            ax.plot(k_list, accuracies, color=(0.7,0.1,0.1,0.7))
-            ax.set_xlabel("k",fontsize=20)
-            ax.set_xticks(x_ticks,x_ticks,fontsize=20)
-            ax.set_yticks(y_ticks,y_ticks,fontsize=20)
-            ax.set_ylabel("Validation Accuracy",fontsize=20)
-            ax.set_title("Principal component {}".format(i+1),fontsize=20)
-        fig1.suptitle("Classification accuracy acc.to PC and K",fontsize=30)
+            ax.plot(k_list, accuracies, color=(0.7,0.1, 0.1,0.7))            
+            ax.set_xticks(x_ticks,x_ticks,fontsize=25)
+            ax.set_yticks(y_ticks,y_ticks,fontsize=25)
+            #ax.legend(fontsize=25,loc="lower right")
+            ax.text(0.35, 0.07, ax_labels[j], fontsize=35,color='black')            
+        plt.subplots_adjust(wspace=0,hspace=0)
+    
 
 
+    def ratio_Plot_aug(self,a,b,c,d,e,f,g,pca_c,random_state):    
+        
+        '''
+        
+    
+        Parameters
+        ----------
+        a : str
+            분류유체1의 이름 (사진이 저장된 파일명과 같아야함)
+        b : str
+            분류유체2의 이름 (사진이 저장된 파일명과 같아야함)
+        c : str
+            분류유체3의 이름 (사진이 저장된 파일명과 같아야함)
+        pca_c : int, optional
+            분류시 사용 할 주성분의 갯수. The default is 10.
+    
+        Returns
+        -------
+        None.
+    
+        '''
+        filename=a[7:]+b[7:]+c[7:]+d[7:]+e[7:]+f[7:]+g[7:]
+        base_dir = '/home/minhyukim/PCA/'
+        save_dir = base_dir+'PCA_result/'+filename
+
+        try:
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+        except OSError:
+            print ('Error: Creating directory. ' +  save_dir)
+
+
+        a_dir = os.path.join(base_dir,'{}'.format(a))
+        b_dir = os.path.join(base_dir,'{}'.format(b))
+        c_dir = os.path.join(base_dir,'{}'.format(c))
+        d_dir = os.path.join(base_dir,'{}'.format(d))
+        e_dir = os.path.join(base_dir,'{}'.format(e))
+        f_dir = os.path.join(base_dir,'{}'.format(f))
+        g_dir = os.path.join(base_dir,'{}'.format(g))
+        
+        a_list = os.listdir(a_dir)
+        b_list = os.listdir(b_dir)
+        c_list = os.listdir(c_dir)
+        d_list = os.listdir(d_dir)
+        e_list = os.listdir(e_dir)
+        f_list = os.listdir(f_dir)
+        g_list = os.listdir(g_dir)
+        
+        a_list.sort()
+        b_list.sort()
+        c_list.sort()
+        d_list.sort()
+        e_list.sort()
+        f_list.sort()
+        g_list.sort()
+
+   
+        
+        a_images = np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0),axis=0)
+        b_images = np.expand_dims(cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0),axis=0)
+        c_images = np.expand_dims(cv2.imread(os.path.join(c_dir,'{}'.format(c_list[0])),0),axis=0)
+        d_images = np.expand_dims(cv2.imread(os.path.join(d_dir,'{}'.format(d_list[0])),0),axis=0)
+        e_images = np.expand_dims(cv2.imread(os.path.join(e_dir,'{}'.format(e_list[0])),0),axis=0)
+        f_images = np.expand_dims(cv2.imread(os.path.join(f_dir,'{}'.format(f_list[0])),0),axis=0)
+        g_images = np.expand_dims(cv2.imread(os.path.join(g_dir,'{}'.format(g_list[0])),0),axis=0)
+        for i in range(1,len(a_list)):
+            a_images = np.concatenate((a_images,np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0),axis=0)))
+        for i in range(1,len(b_list)):
+            b_images = np.concatenate((b_images,np.expand_dims(cv2.imread(os.path.join(b_dir,'{}'.format(b_list[i])),0),axis=0)))
+        for i in range(1,len(c_list)):
+            c_images = np.concatenate((c_images,np.expand_dims(cv2.imread(os.path.join(c_dir,'{}'.format(c_list[i])),0),axis=0)))
+        for i in range(1,len(d_list)):
+            d_images = np.concatenate((d_images,np.expand_dims(cv2.imread(os.path.join(d_dir,'{}'.format(d_list[i])),0),axis=0)))
+        for i in range(1,len(e_list)):
+            e_images = np.concatenate((e_images,np.expand_dims(cv2.imread(os.path.join(e_dir,'{}'.format(e_list[i])),0),axis=0)))
+        for i in range(1,len(f_list)):
+            f_images = np.concatenate((f_images,np.expand_dims(cv2.imread(os.path.join(f_dir,'{}'.format(f_list[i])),0),axis=0)))
+        for i in range(1,len(g_list)):
+            g_images = np.concatenate((g_images,np.expand_dims(cv2.imread(os.path.join(g_dir,'{}'.format(g_list[i])),0),axis=0)))
+        images = np.concatenate((a_images,b_images,c_images,d_images,e_images,f_images,g_images),axis=0)
+        
+        a_data = np.expand_dims((cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0).flatten()),axis=0)
+        b_data = np.expand_dims((cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0).flatten()),axis=0)
+        c_data = np.expand_dims((cv2.imread(os.path.join(c_dir,'{}'.format(c_list[0])),0).flatten()),axis=0)
+        d_data = np.expand_dims((cv2.imread(os.path.join(d_dir,'{}'.format(d_list[0])),0).flatten()),axis=0)
+        e_data = np.expand_dims((cv2.imread(os.path.join(e_dir,'{}'.format(e_list[0])),0).flatten()),axis=0)
+        f_data = np.expand_dims((cv2.imread(os.path.join(f_dir,'{}'.format(f_list[0])),0).flatten()),axis=0)
+        g_data = np.expand_dims((cv2.imread(os.path.join(g_dir,'{}'.format(g_list[0])),0).flatten()),axis=0)
+        for i in range(1,len(a_list)):
+            a_data = np.concatenate((a_data,np.expand_dims((cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(b_list)):
+            b_data = np.concatenate((b_data,np.expand_dims((cv2.imread(os.path.join(b_dir,'{}'.format(b_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(c_list)):
+            c_data = np.concatenate((c_data,np.expand_dims((cv2.imread(os.path.join(c_dir,'{}'.format(c_list[i])),0).flatten()),axis=0))) 
+        for i in range(1,len(d_list)):
+            d_data = np.concatenate((d_data,np.expand_dims((cv2.imread(os.path.join(d_dir,'{}'.format(d_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(e_list)):
+            e_data = np.concatenate((e_data,np.expand_dims((cv2.imread(os.path.join(e_dir,'{}'.format(e_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(f_list)):
+            f_data = np.concatenate((f_data,np.expand_dims((cv2.imread(os.path.join(f_dir,'{}'.format(f_list[i])),0).flatten()),axis=0)))
+        for i in range(1,len(g_list)):
+            g_data = np.concatenate((g_data,np.expand_dims((cv2.imread(os.path.join(g_dir,'{}'.format(g_list[i])),0).flatten()),axis=0)))
+        data = np.concatenate((a_data,b_data,c_data,d_data,e_data,f_data,g_data),axis=0)    
+    
+        ## CMC = 0, PEO = 1 로 넘버링
+        target_0 = []
+        for i in range(0,len(a_list)):
+            target_0.append(0)
+        target_1 = []
+        for i in range(0,len(b_list)):
+            target_1.append(1)
+        target_2 = []
+        for i in range(0,len(c_list)):
+            target_2.append(2)
+        target_3 = []
+        for i in range(0,len(d_list)):
+            target_3.append(3)
+        target_4 = []
+        for i in range(0,len(e_list)):
+            target_4.append(4)
+        target_5 = []
+        for i in range(0,len(f_list)):
+            target_5.append(5)
+        target_6 = []
+        for i in range(0,len(g_list)):
+            target_6.append(6)
+        target = target_0 + target_1 +target_2 + target_3 + target_4 + target_5 + target_6##순서 바뀌면 안됨. 앞의 이미지와 매칭되는 넘버링 이기때문에
+        target = np.array(target)
+    
+        target_names = ['{}'.format(a),'{}'.format(b),'{}'.format(c), '{}'.format(d),'{}'.format(e), '{}'.format(f),'{}'.format(g)]
+    
+        image_shape = images[0].shape ## image는 실제 이미지샘플 1개 의미함 (여기서 people.은 이미지 보관 장소?)
+        fig, axes = plt.subplots(2, 5, figsize=(15, 8), subplot_kw={'xticks':(), 'yticks':()}) ##이미지 확인
+        for target, image, ax in zip(target,images, axes.ravel()):
+            ax.imshow(image)
+            ax.set_title(target_names[target])
+        plt.show()     
+    
+        ##
+        print("images.shape: {}".format(images.shape))
+        print("클래스의 개수: {}".format(len(target_names)))
+        
+        ##target 이 자꾸1로 변경되서 다시 추가함
+        target = target_0 + target_1 +target_2 + target_3 + target_4 + target_5 + target_6##순서 바뀌면 안됨. 앞의 이미지와 매칭되는 넘버링 이기때문에
+        target = np.array(target)
         
         
+        # mask = np.zeros(target.shape, dtype=np.bool)
+        # for i in np.unique(target):
+        #     mask[np.where(target== i)[0][:]] = 1
+        
+        # X_people = data[mask]
+        # y_people = target[mask]
+        
+        # X_people = X_people / 255.
+        X_people = data
+        y_people = target
+
+        f_X_people=[]
+        f_y_people=[]
+        for i in range(7):
+            f_X_people.append(X_people[40*i:30+40*i])
+            f_y_people.append(y_people[40*i:30+40*i])
+        f_X_people=np.reshape(f_X_people,(210,144000))
+        f_y_people=np.reshape(f_y_people,(210,))       
+        
+       
+
+      
+        X_train, X_test, y_train, y_test = train_test_split(X_people, y_people,stratify=y_people, test_size=0.04, random_state=random_state)
+        f_X_train, f_X_test, f_y_train, f_y_test = train_test_split(f_X_people, f_y_people, stratify=f_y_people, test_size=0.05, random_state=random_state)
+
+        pca = PCA(n_components=pca_c, whiten=True, random_state=0).fit(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+        #pca = PCA(n_components=pca_c, whiten=True, random_state=0).fit(X_train)
+        datavar=np.var(X_people,0)
+        varmax=np.max(datavar) 
+        X_train_pca = pca.transform(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+        #X_train_pca = pca.transform(X_train)
+        X_test_pca = pca.transform(f_X_test)
+        X_people_pca = pca.transform(X_people)
+
+        '''  
+        proba_list = []        
+        accuracies = []
+        classifier = KNeighborsClassifier(n_neighbors = 10)
+        for i in range(80) :        
+           pca = PCA(n_components=i+2, whiten=True, random_state=0).fit(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+           X_train_pca = pca.transform(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+           X_test_pca = pca.transform(X_test)
+           classifier.fit(X_train_pca, y_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+           accuracies.append(classifier.score(X_test_pca, y_test))
+           proba = classifier.predict_proba(X_test_pca)
+           proba_list.append(proba)
+
+        fig1,ax1= plt.subplots()
+        ax1.plot(range(80),accuracies) 
+        ax1.set_xlabel("components")
+        ax1.set_ylabel("Validation Accuracy")
+        ax1.axvline(x=16, color='red', linestyle='--')
+        ax1.set_title("Fluid Classifier Accuracy")
+        fig1.savefig('{}/{}'.format(save_dir,"Proportion"))'''
+
+
+        #fig2, ax2 = plt.subplots(2,5, figsize=(15,8), subplot_kw={'xticks': [0,200,400], 'yticks': [360,180,0]})
+        #for i, (component, ax2) in enumerate(zip(pca.components_, ax2.ravel())):
+        #    ax2.imshow(component.reshape(image_shape), cmap='viridis')
+        #    ax2.set_title("PC {}".format(i+1))
+
+        #fig2.savefig('{}/{}'.format(save_dir,"Principal component"))
+
+
+        Fluid=['L1','E1','L2','E2','L3','E3','L4','E4','L5','E5','L6','E6','L7','E7']
+        xticks=[0,0.4,1,1.4,2,2.4,3,3.4,4,4.4,5,5.4,6,6.4]
+        yticks=[0,0.2,0.4,0.6,0.8,1.0]
+        Carboref=[1,0,0,0.5,0.5 ,0,    1/3]
+        CMCref=  [0,1,0,0.5,0 ,  0.5,  1/3]
+        PEOref=  [0,0,1,0  ,0.5 ,0.5,  1/3]
+        matric=np.vstack([Carboref,CMCref,PEOref])
+        #print(matric)
+
+
+            #k_list = range(1,10)
+
+        classifier = KNeighborsClassifier(n_neighbors=6)
+        classifier.fit(X_train_pca, y_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
+        #classifier.fit(X_train_pca, y_train)
+        proba = classifier.predict_proba(X_test_pca) 
+
+
+        proba_list=[]
+
+        #print(np.argmax(proba,axis=1))
+        #print('proba',proba,'y_test',y_test)
+
+        #f1=f1_score(y_test,np.argmax(proba,axis=1),average='macro')
+        #f2=f1_score(y_test,np.argmax(proba,axis=1),average='micro')
+        #f3=f1_score(y_test,np.argmax(proba,axis=1),average='weighted')
+
+
+        #print('macro',f1)
+        #print('micro',f2)
+        #print('weighted',f3)
+
+        Carbo_y=[[],[],[],[],[],[],[]]
+        CMC_y=[[],[],[],[],[],[],[]]
+        PEO_y=[[],[],[],[],[],[],[]]
+
+        '''for i in range(len(y_test)):
+            concent=matric[:,np.where(proba[i]!=0)]*proba[i][np.where(proba[i]!=0)]
+            concent_sum=np.sum(concent,axis=-1)
+            Carbo_y[y_test[i]].append(concent_sum[0])
+
+            CMC_y[y_test[i]].append(concent_sum[1])
+            PEO_y[y_test[i]].append(concent_sum[2])
+            print('matric',matric[:,np.where(proba[i]!=0)],'proba',proba[i][np.where(proba[i]!=0)],'concent',concent,'y_test',y_test[i],'concent_sum',concent_sum)'''
+
+        proba_list.append(proba)
+        #print(proba_list)
+
+        proba_list=proba_list[0]
+        for i in range(len(proba_list)):
+            Carbo_y[f_y_test[i]].append(proba_list[i][0])
+            CMC_y[f_y_test[i]].append(proba_list[i][1])
+            PEO_y[f_y_test[i]].append(proba_list[i][2])
+
+
+
+
+        fig10,ax10 = plt.subplots()
+        plt.tight_layout()
+
+        ax10.bar([0,1,2,3,4,5,6],Carboref,color='#C588AC',width=0.2)
+        ax10.bar([0,1,2,3,4,5,6],CMCref,color='#7DE4C0', width=0.2,bottom=Carboref)
+        ax10.bar([0,1,2,3,4,5,6],PEOref,color='#72A0D5', width=0.2,bottom=[Carboref[i]+CMCref[i] for i in range(len(Carboref))])
+
+
+        proba_list=np.array(proba_list)
+
+        Carbo_y=[np.average(i) for i in Carbo_y]        
+        CMC_y=[np.average(i) for i in CMC_y]
+        PEO_y=[np.average(i) for i in PEO_y]
+
+        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],Carbo_y,color='#C588AC',width=0.2,label='Class1')        
+        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],CMC_y,bottom=Carbo_y,color='#7DE4C0',width=0.2,label='Class2')
+        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],PEO_y,bottom=[Carbo_y[i]+CMC_y[i] for i in range(7)],color='#72A0D5',width=0.2,label='Class3')
+      
+        ax10.set_xticks(xticks,Fluid,fontsize=15)
+        ax10.set_yticks(yticks,yticks,fontsize=15)
+        ax10.set_ylabel('Ratio',fontsize=15)
+        #ax10.set_xticklabels(Fluid)
+        ax10.legend(fontsize=15,loc='lower left')
+        fig10.savefig('{}/{}'.format(save_dir,a[-9:])) 
    
     
     
     
-    def ratio_Plot(self,a,b,c,d,e,f,g,pc1,pc2,pc3,stackup_pc,pcpxindex,pca_c,pixel,random_state):    
+    def ratio_Plot(self,a,b,c,d,e,f,g,pc1,pc2,pc3,pca_c,random_state):    
         
         '''
         
@@ -2323,7 +3055,7 @@ class pcaclass:
     
         target_names = ['{}'.format(a),'{}'.format(b),'{}'.format(c), '{}'.format(d),'{}'.format(e), '{}'.format(f),'{}'.format(g)]
     
-        image_shape = images[0].shape ## image는 실제 이미지샘플 1개 의미함 (여기서 people.은 이미지 보관 장소?)
+        image_shape = images[0].shape
         fig, axes = plt.subplots(2, 5, figsize=(15, 8), subplot_kw={'xticks':(), 'yticks':()}) ##이미지 확인
         for target, image, ax in zip(target,images, axes.ravel()):
             ax.imshow(image)
@@ -2334,65 +3066,28 @@ class pcaclass:
         print("images.shape: {}".format(images.shape))
         print("클래스의 개수: {}".format(len(target_names)))
         
-        ##target 이 자꾸1로 변경되서 다시 추가함
-        target = target_0 + target_1 +target_2 + target_3 + target_4 + target_5 + target_6##순서 바뀌면 안됨. 앞의 이미지와 매칭되는 넘버링 이기때문에
+  
+        target = target_0 + target_1 +target_2 + target_3 + target_4 + target_5 + target_6#
         target = np.array(target)
         
-        
-        # mask = np.zeros(target.shape, dtype=np.bool)
-        # for i in np.unique(target):
-        #     mask[np.where(target== i)[0][:]] = 1
-        
-        # X_people = data[mask]
-        # y_people = target[mask]
-        
-        # X_people = X_people / 255.
+        s
+
         X_people = data
         y_people = target
         
-       
-
-      
-        X_train, X_test, y_train, y_test = train_test_split(X_people, y_people,stratify=y_people, test_size=0.1, random_state=random_state)
-
+             
+        X_train, X_test, y_train, y_test = train_test_split(X_people, y_people,stratify=y_people, test_size=0.04, random_state=random_state)
 
         pca = PCA(n_components=pca_c, whiten=True, random_state=0).fit(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
-        #pca = PCA(n_components=pca_c, whiten=True, random_state=0).fit(X_train)
+
         datavar=np.var(X_people,0)
         varmax=np.max(datavar) 
         X_train_pca = pca.transform(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
-        #X_train_pca = pca.transform(X_train)
+
         X_test_pca = pca.transform(X_test)
         X_people_pca = pca.transform(X_people)
 
-        '''  
-        proba_list = []        
-        accuracies = []
-        classifier = KNeighborsClassifier(n_neighbors = 10)
-        for i in range(80) :        
-           pca = PCA(n_components=i+2, whiten=True, random_state=0).fit(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
-           X_train_pca = pca.transform(X_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
-           X_test_pca = pca.transform(X_test)
-           classifier.fit(X_train_pca, y_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
-           accuracies.append(classifier.score(X_test_pca, y_test))
-           proba = classifier.predict_proba(X_test_pca)
-           proba_list.append(proba)
 
-        fig1,ax1= plt.subplots()
-        ax1.plot(range(80),accuracies) 
-        ax1.set_xlabel("components")
-        ax1.set_ylabel("Validation Accuracy")
-        ax1.axvline(x=16, color='red', linestyle='--')
-        ax1.set_title("Fluid Classifier Accuracy")
-        fig1.savefig('{}/{}'.format(save_dir,"Proportion"))'''
-
-
-        #fig2, ax2 = plt.subplots(2,5, figsize=(15,8), subplot_kw={'xticks': [0,200,400], 'yticks': [360,180,0]})
-        #for i, (component, ax2) in enumerate(zip(pca.components_, ax2.ravel())):
-        #    ax2.imshow(component.reshape(image_shape), cmap='viridis')
-        #    ax2.set_title("PC {}".format(i+1))
-
-        #fig2.savefig('{}/{}'.format(save_dir,"Principal component"))
 
 
         Fluid=['L1','E1','L2','E2','L3','E3','L4','E4','L5','E5','L6','E6','L7','E7']
@@ -2402,46 +3097,22 @@ class pcaclass:
         CMCref=  [0,1,0,0.5,0 ,  0.5,  1/3]
         PEOref=  [0,0,1,0  ,0.5 ,0.5,  1/3]
         matric=np.vstack([Carboref,CMCref,PEOref])
-        #print(matric)
-
-
-            #k_list = range(1,10)
 
         classifier = KNeighborsClassifier(n_neighbors=6)
         classifier.fit(X_train_pca, y_train[np.where((y_train==0)|(y_train==1)|(y_train==2))])
-        #classifier.fit(X_train_pca, y_train)
         proba = classifier.predict_proba(X_test_pca) 
 
 
         proba_list=[]
 
-        #print(np.argmax(proba,axis=1))
-        #print('proba',proba,'y_test',y_test)
-
-        #f1=f1_score(y_test,np.argmax(proba,axis=1),average='macro')
-        #f2=f1_score(y_test,np.argmax(proba,axis=1),average='micro')
-        #f3=f1_score(y_test,np.argmax(proba,axis=1),average='weighted')
-
-
-        #print('macro',f1)
-        #print('micro',f2)
-        #print('weighted',f3)
 
         Carbo_y=[[],[],[],[],[],[],[]]
         CMC_y=[[],[],[],[],[],[],[]]
         PEO_y=[[],[],[],[],[],[],[]]
 
-        '''for i in range(len(y_test)):
-            concent=matric[:,np.where(proba[i]!=0)]*proba[i][np.where(proba[i]!=0)]
-            concent_sum=np.sum(concent,axis=-1)
-            Carbo_y[y_test[i]].append(concent_sum[0])
 
-            CMC_y[y_test[i]].append(concent_sum[1])
-            PEO_y[y_test[i]].append(concent_sum[2])
-            print('matric',matric[:,np.where(proba[i]!=0)],'proba',proba[i][np.where(proba[i]!=0)],'concent',concent,'y_test',y_test[i],'concent_sum',concent_sum)'''
 
         proba_list.append(proba)
-        #print(proba_list)
 
         proba_list=proba_list[0]
         for i in range(len(proba_list)):
@@ -2450,13 +3121,12 @@ class pcaclass:
             PEO_y[y_test[i]].append(proba_list[i][2])
 
 
-
-
         fig10,ax10 = plt.subplots()
+        plt.tight_layout()
 
-        ax10.bar([0,1,2,3,4,5,6],Carboref,color='r',width=0.2)
-        ax10.bar([0,1,2,3,4,5,6],CMCref,color='g', width=0.2,bottom=Carboref)
-        ax10.bar([0,1,2,3,4,5,6],PEOref,color='b', width=0.2,bottom=[Carboref[i]+CMCref[i] for i in range(len(Carboref))])
+        ax10.bar([0,1,2,3,4,5,6],Carboref,color='#C588AC',width=0.2)
+        ax10.bar([0,1,2,3,4,5,6],CMCref,color='#7DE4C0', width=0.2,bottom=Carboref)
+        ax10.bar([0,1,2,3,4,5,6],PEOref,color='#72A0D5', width=0.2,bottom=[Carboref[i]+CMCref[i] for i in range(len(Carboref))])
 
 
         proba_list=np.array(proba_list)
@@ -2464,31 +3134,75 @@ class pcaclass:
         Carbo_y=[np.average(i) for i in Carbo_y]        
         CMC_y=[np.average(i) for i in CMC_y]
         PEO_y=[np.average(i) for i in PEO_y]
-
       
             
 
-        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],Carbo_y,color='r',width=0.2,label='Carbopol')        
-        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],CMC_y,bottom=Carbo_y,color='g',width=0.2,label='CMC')
-        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],PEO_y,bottom=[Carbo_y[i]+CMC_y[i] for i in range(7)],color='b',width=0.2,label='PEO')
+        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],Carbo_y,color='#C588AC',width=0.2,label='Class1')        
+        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],CMC_y,bottom=Carbo_y,color='#7DE4C0',width=0.2,label='Class2')
+        ax10.bar([0.4,1.4,2.4,3.4,4.4,5.4,6.4],PEO_y,bottom=[Carbo_y[i]+CMC_y[i] for i in range(7)],color='#72A0D5',width=0.2,label='Class3')
       
         ax10.set_xticks(xticks,Fluid,fontsize=15)
         ax10.set_yticks(yticks,yticks,fontsize=15)
         ax10.set_ylabel('Ratio',fontsize=15)
-        #ax10.set_xticklabels(Fluid)
-        ax10.legend(fontsize=10,loc='upper right')
+
+        ax10.legend(fontsize=15,loc='lower left')
+        fig10.savefig('{}/{}'.format(save_dir,a[-9:]))        
         
     def box_Plot0(self,pca_c):
         
-        pixel1=self.eigen7('220907_Carbopol_noweight','220907_CMC_noweight','220907_PEO_noweight','220907_CMC1,Carbopol1_noweight','220907_PEO1,Carbopol1_noweight','220907_PEO1,CMC1_noweight','220907_PEO1,CMC1,Carbopol1_noweight',0,1,2,1,1,pca_c,0)
-        pixel2=self.eigen7('230413_Carbopol_100weight','230411_CMC_100weight','230411_PEO_100weight','230412_CMC1_Carbopol1_100weight','230412_PEO1,Carbopol1_100weight','230412_PEO1,CMC1_100weight','230412_PEO1,CMC1,Carbopol1_100weight',0,1,2,1,1,pca_c,10)
-        pixel3=self.eigen7('230508_Carbopol_100weight_30frame','230509_CMC_100_weight_30frame','230509_PEO_100weight_30frame','230509_CMC1_Carbopol1_100weight_30frame','230508_PEO1_Carbopol1_100weight_30frame','230509_PEO1_CMC1_100weight_30frame','230509_PEO1_CMC1_Carbopol1_100weight_30frame',0,1,2,1,1,pca_c,30)
-        pixel4=self.eigen7('230508_Carbopol_100weight_50frame','230509_CMC_100_weight_50frame','230509_PEO_100weight_50frame','230509_CMC1_Carbopol1_100weight_50frame','230508_PEO1_Carbopol1_100weight_50frame','230509_PEO1_CMC1_100weight_50frame','230509_PEO1_CMC1_Carbopol1_100weight_50frame',0,1,2,1,1,pca_c,50)
+        pixel1=self.eigen7('1_0F_0W','2_0F_0W','3_0F_0W','4_0F_0W','5_0F_0W','6_0F_0W','7_0F_0W',pca_c)
+        pixel2=self.eigen7('1_10F_100W','2_10F_100W','3_10F_100W','4_10F_100W','5_10F_100W','6_10F_100W','7_10F_100W',pca_c)
+        pixel3=self.eigen7('1_30F_100W','2_30F_100W','3_30F_100W','4_30F_100W','5_30F_100W','6_30F_100W','7_30F_100W',pca_c)
+        pixel4=self.eigen7('1_50F_100W','2_50F_100W','3_50F_100W','4_50F_100W','5_50F_100W','6_50F_100W','7_50F_100W',pca_c)       
+        
+        
+        pixels=[pixel1,pixel2,pixel3,pixel4]
+        
+        colors1=['#BF4F5E','#92B68C','#B5D2D9','#C7A497']
+        colors2=['#F56578','#B8E6B1','#CCEDF5','#EDC3B4']
+        labels1=['0F 100W','10F 100W','30F 100W','50F 100W']
+        labels2=['0_123','10_123','30_123','50_123','0_4567','10_4567','30_4567','50_4567']
+        loca0=[-2,-1,1,2]
+        loca1=[-3,-1,1,3]
+        loca2=[-2,0,2,4]
+        boxs=[]
+        fig1,ax1=plt.subplots(figsize=(20,12),dpi=300)
+        for pixel,color,label,loc in zip(pixels,colors1,labels2,loca1):
+            flierprops = dict(marker='o', markerfacecolor=color, markersize=4)                
+                
+            box=ax1.boxplot(pixel[0],positions=[i for i in range(5+loc,pca_c+1+loc,10)],patch_artist=True,showfliers=True, flierprops=flierprops,widths=1)
+            
+            for i in box['boxes']:
+                i.set_facecolor(color)
+                i.set(edgecolor='w', linestyle='-', linewidth=1)
+            boxs.append(box['boxes'])
+            
+        for pixel,color,label,loc in zip(pixels,colors1,labels1,loca0):
+            flierprops = dict(marker='x', markerfacecolor=color, markersize=4)                
+                
 
-        '''pixel1=self.eigen7('220907_Carbopol_noweight_1','220907_CMC_noweight_1','220907_PEO_noweight_1','220907_CMC1,Carbopol1_noweight_1','220907_PEO1,Carbopol1_noweight_1','220907_PEO1,CMC1_noweight_1','220907_PEO1,CMC1,Carbopol1_noweight_1',0,1,2,1,1,pca_c,0)
-        pixel2=self.eigen7('230413_Carbopol_100weight_1','230411_CMC_100weight_1','230411_PEO_100weight_1','230412_CMC1_Carbopol1_100weight_1','230412_PEO1,Carbopol1_100weight_1','230412_PEO1,CMC1_100weight_1','230412_PEO1,CMC1,Carbopol1_100weight_1',0,1,2,1,1,pca_c,10)
-        pixel3=self.eigen7('230508_Carbopol_100weight_30frame_1','230509_CMC_100_weight_30frame_1','230509_PEO_100weight_30frame_1','230509_CMC1_Carbopol1_100weight_30frame_1','230508_PEO1_Carbopol1_100weight_30frame_1','230509_PEO1_CMC1_100weight_30frame_1','230509_PEO1_CMC1_Carbopol1_100weight_30frame_1',0,1,2,1,1,pca_c,30)
-        pixel4=self.eigen7('230508_Carbopol_100weight_50frame_1','230509_CMC_100_weight_50frame_1','230509_PEO_100weight_50frame_1','230509_CMC1_Carbopol1_100weight_50frame_1','230508_PEO1_Carbopol1_100weight_50frame_1','230509_PEO1_CMC1_100weight_50frame_1','230509_PEO1_CMC1_Carbopol1_100weight_50frame_1',0,1,2,1,1,pca_c,50)'''
+            
+        ax1.legend([boxs[0][0],boxs[1][0],boxs[2][0],boxs[3][0]],labels1,loc='upper left',fontsize=25)
+                    
+        #ax1.legend([boxs[0][0],boxs[1][0],boxs[2][0],boxs[3][0],boxs[4][0],boxs[5][0],boxs[6][0],boxs[7][0]],labels2,loc='upper right',fontsize=15)
+        
+        ax1.set_xticks([i for i in range(5,pca_c+1,10)],[i for i in range(5,pca_c+1,10)],fontsize=25)        
+
+        ax1.set_ylim(-0.03,0.30) 
+        ax1.tick_params(axis='y', labelsize=25)
+        ax1.set_xlabel('PC',fontsize=25)
+        ax1.set_ylabel('MSE',fontsize=25)
+        
+        
+        
+        
+        
+    def box_Plot1(self,pca_c):        
+        
+        pixel1=self.eigen7_aug('1_0F_0W_aug','2_0F_0W_aug','3_0F_0W_aug','4_0F_0W_aug','5_0F_0W_aug','6_0F_0W_aug','7_0F_0W_aug',pca_c)
+        pixel2=self.eigen7_aug('1_10F_100W_aug','2_10F_100W_aug','3_10F_100W_aug','4_10F_100W_aug','5_10F_100W_aug','6_10F_100W_aug','7_10F_100W_aug',pca_c)
+        pixel3=self.eigen7_aug('1_30F_100W_aug','2_30F_100W_aug','3_30F_100W_aug','4_30F_100W_aug','5_30F_100W_aug','6_30F_100W_aug','7_30F_100W_aug',pca_c)
+        pixel4=self.eigen7_aug('1_50F_100W_aug','2_50F_100W_aug','3_50F_100W_aug','4_50F_100W_aug','5_50F_100W_aug','6_50F_100W_aug','7_50F_100W_aug',pca_c)
               
         
         
@@ -2522,7 +3236,7 @@ class pcaclass:
             #for i in box['boxes']:
             #    i.set_facecolor(color)
             #    i.set(edgecolor='w', linestyle='-', linewidth=1)
-            #boxs.append(box['boxes'])
+            #boxs.append(box['boxes'])ratio_plot
             
             
         '''for pixel,color,label,loc in zip(pixels,colors2,labels1,loca2):
@@ -2535,90 +3249,16 @@ class pcaclass:
                 i.set(edgecolor='w', linestyle='-', linewidth=1)
             boxs.append(box['boxes'])'''
             
-        ax1.legend([boxs[0][0],boxs[1][0],boxs[2][0],boxs[3][0]],labels1,loc='upper right',fontsize=15)
+        ax1.legend([boxs[0][0],boxs[1][0],boxs[2][0],boxs[3][0]],labels1,loc='upper left',fontsize=25)
                     
         #ax1.legend([boxs[0][0],boxs[1][0],boxs[2][0],boxs[3][0],boxs[4][0],boxs[5][0],boxs[6][0],boxs[7][0]],labels2,loc='upper right',fontsize=15)
         
-        ax1.set_xticks([i for i in range(5,pca_c+1,10)],[i for i in range(5,pca_c+1,10)],fontsize=15)        
-        ax1.set_xlabel('PC',fontsize=15)
-        ax1.set_ylabel('MSE',fontsize=15)
+        ax1.set_xticks([i for i in range(5,pca_c+1,10)],[i for i in range(5,pca_c+1,10)],fontsize=25)        
+        ax1.set_xlabel('PC',fontsize=25)
+        ax1.set_ylabel('MSE',fontsize=25)
         ax1.set_ylim(-0.03,0.30) 
-        ax1.tick_params(axis='y', labelsize=15)
-        ax1.set_xlabel('Weight',fontsize=15)
-        ax1.set_ylabel('MSE',fontsize=15)
-        
-        
-        
-        
-        
-    def box_Plot1(self,pca_c):
-        
-        '''pixel1=self.eigen7('220907_Carbopol_noweight','220907_CMC_noweight','220907_PEO_noweight','220907_CMC1,Carbopol1_noweight','220907_PEO1,Carbopol1_noweight','220907_PEO1,CMC1_noweight','220907_PEO1,CMC1,Carbopol1_noweight',0,1,2,1,1,pca_c,0)
-        pixel2=self.eigen7('230413_Carbopol_100weight','230411_CMC_100weight','230411_PEO_100weight','230412_CMC1_Carbopol1_100weight','230412_PEO1,Carbopol1_100weight','230412_PEO1,CMC1_100weight','230412_PEO1,CMC1,Carbopol1_100weight',0,1,2,1,1,pca_c,10)
-        pixel3=self.eigen7('230508_Carbopol_100weight_30frame','230509_CMC_100_weight_30frame','230509_PEO_100weight_30frame','230509_CMC1_Carbopol1_100weight_30frame','230508_PEO1_Carbopol1_100weight_30frame','230509_PEO1_CMC1_100weight_30frame','230509_PEO1_CMC1_Carbopol1_100weight_30frame',0,1,2,1,1,pca_c,30)
-        pixel4=self.eigen7('230508_Carbopol_100weight_50frame','230509_CMC_100_weight_50frame','230509_PEO_100weight_50frame','230509_CMC1_Carbopol1_100weight_50frame','230508_PEO1_Carbopol1_100weight_50frame','230509_PEO1_CMC1_100weight_50frame','230509_PEO1_CMC1_Carbopol1_100weight_50frame',0,1,2,1,1,pca_c,50)'''
-
-        pixel1=self.eigen7('220907_Carbopol_noweight_1','220907_CMC_noweight_1','220907_PEO_noweight_1','220907_CMC1,Carbopol1_noweight_1','220907_PEO1,Carbopol1_noweight_1','220907_PEO1,CMC1_noweight_1','220907_PEO1,CMC1,Carbopol1_noweight_1',0,1,2,1,1,pca_c,0)
-        pixel2=self.eigen7('230413_Carbopol_100weight_1','230411_CMC_100weight_1','230411_PEO_100weight_1','230412_CMC1_Carbopol1_100weight_1','230412_PEO1,Carbopol1_100weight_1','230412_PEO1,CMC1_100weight_1','230412_PEO1,CMC1,Carbopol1_100weight_1',0,1,2,1,1,pca_c,10)
-        pixel3=self.eigen7('230508_Carbopol_100weight_30frame_1','230509_CMC_100_weight_30frame_1','230509_PEO_100weight_30frame_1','230509_CMC1_Carbopol1_100weight_30frame_1','230508_PEO1_Carbopol1_100weight_30frame_1','230509_PEO1_CMC1_100weight_30frame_1','230509_PEO1_CMC1_Carbopol1_100weight_30frame_1',0,1,2,1,1,pca_c,30)
-        pixel4=self.eigen7('230508_Carbopol_100weight_50frame_1','230509_CMC_100_weight_50frame_1','230509_PEO_100weight_50frame_1','230509_CMC1_Carbopol1_100weight_50frame_1','230508_PEO1_Carbopol1_100weight_50frame_1','230509_PEO1_CMC1_100weight_50frame_1','230509_PEO1_CMC1_Carbopol1_100weight_50frame_1',0,1,2,1,1,pca_c,50)
-              
-        
-        
-        
-        pixels=[pixel1,pixel2,pixel3,pixel4]
-        
-        colors1=['#BF4F5E','#92B68C','#B5D2D9','#C7A497']
-        colors2=['#F56578','#B8E6B1','#CCEDF5','#EDC3B4']
-        labels1=['0F 100W','10F 100W','30F 100W','50F 100W']
-        labels2=['0_123','10_123','30_123','50_123','0_4567','10_4567','30_4567','50_4567']
-        loca0=[-2,-1,1,2]
-        loca1=[-3,-1,1,3]
-        loca2=[-2,0,2,4]
-        boxs=[]
-        fig1,ax1=plt.subplots(figsize=(20,12),dpi=300)
-        for pixel,color,label,loc in zip(pixels,colors1,labels2,loca1):
-            flierprops = dict(marker='o', markerfacecolor=color, markersize=4)                
-                
-            box=ax1.boxplot(pixel[0],positions=[i for i in range(5+loc,pca_c+1+loc,10)],patch_artist=True,showfliers=True, flierprops=flierprops,widths=1)
-            
-            for i in box['boxes']:
-                i.set_facecolor(color)
-                i.set(edgecolor='w', linestyle='-', linewidth=1)
-            boxs.append(box['boxes'])
-            
-        for pixel,color,label,loc in zip(pixels,colors1,labels1,loca0):
-            flierprops = dict(marker='x', markerfacecolor=color, markersize=4)                
-                
-            #box=ax1.boxplot(pixel[2],positions=[i for i in range(5+loc,pca_c+1+loc,10)],patch_artist=True,showfliers=True, flierprops=flierprops,widths=0.5)
-            
-            #for i in box['boxes']:
-            #    i.set_facecolor(color)
-            #    i.set(edgecolor='w', linestyle='-', linewidth=1)
-            #boxs.append(box['boxes'])
-            
-            
-        '''for pixel,color,label,loc in zip(pixels,colors2,labels1,loca2):
-            flierprops = dict(marker='x', markerfacecolor=color, markersize=4)                
-                
-            box=ax1.boxplot(pixel[2],positions=[i for i in range(5+loc,pca_c+1+loc,10)],patch_artist=True,showfliers=True, flierprops=flierprops,widths=0.5)
-            
-            for i in box['boxes']:
-                i.set_facecolor(color)
-                i.set(edgecolor='w', linestyle='-', linewidth=1)
-            boxs.append(box['boxes'])'''
-            
-        ax1.legend([boxs[0][0],boxs[1][0],boxs[2][0],boxs[3][0]],labels1,loc='upper right',fontsize=15)
-                    
-        #ax1.legend([boxs[0][0],boxs[1][0],boxs[2][0],boxs[3][0],boxs[4][0],boxs[5][0],boxs[6][0],boxs[7][0]],labels2,loc='upper right',fontsize=15)
-        
-        ax1.set_xticks([i for i in range(5,pca_c+1,10)],[i for i in range(5,pca_c+1,10)],fontsize=15)        
-        ax1.set_xlabel('PC',fontsize=15)
-        ax1.set_ylabel('MSE',fontsize=15)
-        ax1.set_ylim(-0.03,0.30) 
-        ax1.tick_params(axis='y', labelsize=15)
-        ax1.set_xlabel('Weight',fontsize=15)
-        ax1.set_ylabel('MSE',fontsize=15)        
+        ax1.tick_params(axis='y', labelsize=25)
+     
 
         
         
@@ -2722,17 +3362,18 @@ class pcaclass:
             
         
     def augmentation(self,a,b,c,d,e,f,g,pc):
-        save_dir='PCA/Data_augmentation/{}_{}'.format(a[-7:],pc)
+        save_dir='PCA/Data_augmentation/{}_{}'.format(a[-9:],pc)
         try:
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
         except OSError:
             print ('Error: Creating directory. ' +  save_dir)
-        comp=self.component(a,b,c,d,e,f,g,pc)        
+        comp=self.aug_component(a,b,c,d,e,f,g,pc)        
         components=comp[0][0:pc][:]
         scoreaverage=comp[1]
         image_shape=comp[2]
         mean=comp[4]
+        
         X_people=comp[5]
         scorevariance=comp[6]
         combicomp=[]
@@ -2745,13 +3386,13 @@ class pcaclass:
         plt.rcParams["figure.dpi"] = 300
         scoreaverage_array = np.array(scoreaverage)
         scorevariance_array = np.array(scorevariance)
-        randomsize=10
+        randomsize=30
         
         for j in range(len(scoreaverage[0])):
             for k in range(randomsize):
                 for i in range(len(components)):           
                     #ravdist=np.random.randint(scoreaverage_array[i,j]-3*(scorevariance_array[i,j]**0.5),scoreaverage_array[i,j]+3*(scorevariance_array[i,j]**0.5))
-                    ravdist=np.random.normal(scoreaverage_array[i,j],scorevariance_array[i,j]**0.5,1)
+                    ravdist=np.random.normal(scoreaverage_array[i,j],(scorevariance_array[i,j]**0.5)*0.5,1)
                     pcombicomp.append(np.dot(np.expand_dims(ravdist,axis=0),np.expand_dims(components[i],axis=0)))
                 spcombicomp=np.sum(pcombicomp,axis=0)
                 ppcombicomp.append(spcombicomp)
@@ -2792,10 +3433,47 @@ class pcaclass:
         
                         
 
-
-
-
-
+    def score_plot(self,a,b,c,d,e,f,g):    
+        component=self.component(a,b,c,d,e,f,g,50)   
+        #component=pca1.component('220907_Carbopol_noweight','220907_CMC_noweight','220907_PEO_noweight','220907_CMC1,Carbopol1_noweight','220907_PEO1,Carbopol1_noweight','220907_PEO1,CMC1_noweight','220907_PEO1,CMC1,Carbopol1_noweight',50)
+        scorespc1=component[8][:,0]
+        scorespc2=component[8][:,1]
+        scoreaveragepc1=component[1]
+        label=component[7]
+        
+        fig1,ax1=plt.subplots(figsize=(5,3),dpi=200)
+        xticks=['I','II','III','IV','V','VI','VII']
+        loss=[5.01,0.34,0.51,0.3,7.7,0.55,0.81]
+        
+        ax1.plot(xticks,loss,color=(0.7,0.1,0.1,0.7))
+        ax1.set_xticks(xticks,xticks,fontsize=15)
+        ax1.set_yticks(range(0,9,2),range(0,9,2),fontsize=15)
+        ax1.set_title('Loss Modulus G˝',fontsize=20)
+        
+        
+        fig2,ax2=plt.subplots(figsize=(5,3),dpi=200)
+        
+        extv=[19,1.8,64,0.74,16.6,48,31.4]
+        
+        ax2.plot(xticks,extv,color=(0.7,0.1,0.1,0.7))
+        ax2.set_xticks(xticks,xticks,fontsize=15)
+        ax2.set_yticks(range(0,64,20),range(0,64,20),fontsize=15)
+        ax2.set_title('Extension viscosity',fontsize=20)
+        
+        fig3,ax3=plt.subplots(figsize=(5,3),dpi=200)
+        
+        loss=[5.01,0.34,0.51,0.3,7.7,0.55,0.81]
+        
+        ax3.plot(xticks,scoreaveragepc1[0],color=(0.7,0.1,0.1,0.7))
+        ax3.set_xticks(xticks,xticks,fontsize=15)
+        ax3.set_yticks(np.arange(-1,3,1),np.arange(-1,3,1),fontsize=15)
+        ax3.set_title('PC1',fontsize=20)
+        
+        fig4,ax4=plt.subplots(figsize=(5,3),dpi=200)
+        ax4.plot(xticks,scoreaveragepc1[1],color=(0.7,0.1,0.1,0.7))
+        ax4.set_xticks(xticks,xticks,fontsize=15)
+        ax4.set_yticks(np.arange(-1,3,1),np.arange(-1,3,1),fontsize=15)
+        ax4.set_title('PC2',fontsize=20)
 
 
           
@@ -3114,7 +3792,7 @@ class pcaclass:
         
 
     
-    def eigen3test(self,a,b,c,test,pc1,pc2,pc3,pca_c=2):
+    def eigen3(self,a,b,c,pca_c=50):
 
         import cv2
         import numpy as np
@@ -3128,9 +3806,9 @@ class pcaclass:
         from sklearn.neighbors import KNeighborsClassifier
         from sklearn.model_selection import train_test_split
         from mpl_toolkits.mplot3d import Axes3D
-        import json
-        import pandas as pd
-        import seaborn as sns
+
+
+
 
 
         '''
@@ -3152,7 +3830,7 @@ class pcaclass:
         None.
     
         '''
-        filename=a[7:]+b[7:]+c[7:]+test[7:]
+        filename=a[7:]+b[7:]+c[7:]
         base_dir = '/home/minhyukim/PCA/'
         save_dir = base_dir+'PCA_result/'+filename
 
@@ -3167,19 +3845,18 @@ class pcaclass:
         a_dir = os.path.join(base_dir,'{}'.format(a))
         b_dir = os.path.join(base_dir,'{}'.format(b))
         c_dir = os.path.join(base_dir,'{}'.format(c))
-        test_dir = os.path.join(base_dir,'{}'.format(test))
 
 
         
         a_list = os.listdir(a_dir)
         b_list = os.listdir(b_dir)
         c_list = os.listdir(c_dir)
-        test_list=os.listdir(test_dir)
+        #test_list=os.listdir(test_dir)
         
         a_images = np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0),axis=0)
         b_images = np.expand_dims(cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0),axis=0)
         c_images = np.expand_dims(cv2.imread(os.path.join(c_dir,'{}'.format(c_list[0])),0),axis=0)
-        test_images= np.expand_dims(cv2.imread(os.path.join(test_dir,'{}'.format(test_list[0])),0),axis=0)
+        #test_images= np.expand_dims(cv2.imread(os.path.join(test_dir,'{}'.format(test_list[0])),0),axis=0)
 
         for i in range(1,len(a_list)):
             a_images = np.concatenate((a_images,np.expand_dims(cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0),axis=0)))
@@ -3188,8 +3865,8 @@ class pcaclass:
         for i in range(1,len(c_list)):
             c_images = np.concatenate((c_images,np.expand_dims(cv2.imread(os.path.join(c_dir,'{}'.format(c_list[i])),0),axis=0)))
         
-        for i in range(1,len(test_list)):
-            test_images = np.concatenate((test_images,np.expand_dims(cv2.imread(os.path.join(test_dir,'{}'.format(test_list[i])),0),axis=0)))
+        #for i in range(1,len(test_list)):
+        #    test_images = np.concatenate((test_images,np.expand_dims(cv2.imread(os.path.join(test_dir,'{}'.format(test_list[i])),0),axis=0)))
 
 
         images = np.concatenate((a_images,b_images,c_images),axis=0)
@@ -3197,7 +3874,7 @@ class pcaclass:
         a_data = np.expand_dims((cv2.imread(os.path.join(a_dir,'{}'.format(a_list[0])),0).flatten()),axis=0)
         b_data = np.expand_dims((cv2.imread(os.path.join(b_dir,'{}'.format(b_list[0])),0).flatten()),axis=0)
         c_data = np.expand_dims((cv2.imread(os.path.join(c_dir,'{}'.format(c_list[0])),0).flatten()),axis=0)
-        test_data = np.expand_dims((cv2.imread(os.path.join(test_dir,'{}'.format(test_list[0])),0).flatten()),axis=0)
+        #test_data = np.expand_dims((cv2.imread(os.path.join(test_dir,'{}'.format(test_list[0])),0).flatten()),axis=0)
 
         for i in range(1,len(a_list)):
             a_data = np.concatenate((a_data,np.expand_dims((cv2.imread(os.path.join(a_dir,'{}'.format(a_list[i])),0).flatten()),axis=0)))
@@ -3207,8 +3884,8 @@ class pcaclass:
             c_data = np.concatenate((c_data,np.expand_dims((cv2.imread(os.path.join(c_dir,'{}'.format(c_list[i])),0).flatten()),axis=0))) 
         data = np.concatenate((a_data,b_data,c_data),axis=0)   
 
-        for i in range(1,len(test_list)):
-            test_data = np.concatenate((test_data,np.expand_dims((cv2.imread(os.path.join(test_dir,'{}'.format(test_list[i])),0).flatten()),axis=0))) 
+        #for i in range(1,len(test_list)):
+         #   test_data = np.concatenate((test_data,np.expand_dims((cv2.imread(os.path.join(test_dir,'{}'.format(test_list[i])),0).flatten()),axis=0))) 
  
     
         ## CMC = 0, PEO = 1 로 넘버링
@@ -3273,11 +3950,11 @@ class pcaclass:
         plt.title("Breast Cancer Classifier Accuracy")
         plt.show()
         ''' 
-        knn = KNeighborsClassifier(n_neighbors=60)
+        knn = KNeighborsClassifier(n_neighbors=6)
         knn.fit(X_train, y_train)
         
         ##
-        pca = PCA(n_components=pca_c, whiten=False, random_state=0).fit(X_train)
+        pca = PCA(n_components=pca_c, whiten=True, random_state=0).fit(X_train)
         X_train_pca = pca.transform(X_train)
         X_test_pca = pca.transform(X_test)
         #X_people_pca = pca.transform(X_people)
@@ -3285,22 +3962,27 @@ class pcaclass:
 
         
         
-        ##
-        fig, ax = plt.subplots(2,5, figsize=(15,8), subplot_kw={'xticks': (0,200,400), 'yticks': (360,180,0)})
-        for i, (component, ax) in enumerate(zip(pca.components_, ax.ravel())):
-            #ax.imshow(component.reshape(image_shape), cmap='viridis')
+        fig, axes = plt.subplots(4,5, figsize=(15,12), subplot_kw={'xticks': (), 'yticks': ()},dpi=300)      
+        for i, (component, ax) in enumerate(zip(pca.components_, axes.ravel())):            
+            ax.imshow(component.reshape(image_shape), cmap='viridis')            
             ax.set_title("PC {}".format(i+1))
 
         fig.savefig('{}/{}'.format(save_dir,"Principal component"))
+        
+        fig2,axes2 = plt.subplots(subplot_kw={'xticks': (), 'yticks': ()},dpi=300)
+        for i, (component) in enumerate(pca.components_[[4,14,24,34],:]):
+            axes2.imshow(component.reshape(image_shape), cmap='viridis')
+            fig2.savefig('{}/{}'.format(save_dir,"Principal Component3"+'_{}_pc{}'.format(a[-9:],10*(i)+5)),bbox_inches='tight')
+        '''
 
-        Fluid=['F(1)','F(2)','F(3)','F(4)','F(5)','F(6)','F(7)']
-        Carboref=[1,0,0,0.5,0  ,0.5,0.33]
-        CMCref=  [0,1,0,0.5,0.5,0,  0.33]
-        PEOref=  [0,0,1,0  ,0.5 ,0.5,0.33]
+        #Fluid=['F(1)','F(2)','F(3)','F(4)','F(5)','F(6)','F(7)']
+        #Carboref=[1,0,0,0.5,0  ,0.5,0.33]
+        #CMCref=  [0,1,0,0.5,0.5,0,  0.33]
+        #PEOref=  [0,0,1,0  ,0.5 ,0.5,0.33]
 
-        proba_list=[]
+        #proba_list=[]
       
-        k_list = range(1,10)
+        #k_list = range(1,10)
 
         classifier = KNeighborsClassifier(n_neighbors = 60)
         classifier.fit(X_train_pca, y_train)
@@ -3319,7 +4001,7 @@ class pcaclass:
         ax10.bar([ i + 0.4 for i in range(len(Fluid))],np.average(proba_list[0][:,1]),bottom=np.average(proba_list[0][:,0]),color='g',width=0.2)
         ax10.bar([ i + 0.4 for i in range(len(Fluid))],np.average(proba_list[0][:,2]),bottom=np.average(proba_list[0][:,0])+np.average(proba_list[0][:,1]),color='b',width=0.2)
         
-        fig10.savefig('{}/{}'.format(save_dir,"Probability_weight"))
+        fig10.savefig('{}/{}'.format(save_dir,"Probability_weight"))'''
         
 
         
@@ -3434,7 +4116,7 @@ class pcaclass:
         with pd.ExcelWriter(str(exfilename), mode='a', engine='openpyxl') as writer:
             data2.to_excel(writer,sheet_name='sample number')
             data3.to_excel(writer,sheet_name='score averge' )'''
-        
+'''        
 #Stack-up plot
         components=pca.components_
         y_axis=np.cumsum(np.multiply(components[pc1,:],components[pc1,:]))
@@ -3515,7 +4197,7 @@ class pcaclass:
 #%%        
         
 
-        '''
+        
             
             Parameters
             ----------
